@@ -4,13 +4,14 @@ Version: 0.0.0.9000
 Authors@R: person("Matthew", "Lincoln", email = "matthew.d.lincoln@gmail.com", role = c("aut", "cre"))
 Description: Create a minimal sqlite database for storing R command history.
 License: MIT + file LICENSE
-Imports:
+URL: https://github.com/mdlincoln/rhist
+BugReports: https://github.com/mdlincoln/rhist/issues
+Imports: 
     DBI,
+    devtools,
     RSQLite
-Suggests:
+Suggests: 
     dbplyr
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/mdlincoln/rhist
-BugReports: https://github.com/mdlincoln/rhist/issues
