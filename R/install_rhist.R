@@ -1,16 +1,57 @@
+#' Install rhist
+#'
+#' Initializes a new .rhistory.sqlite db and provides code to add a .Last
+#' function to your .Rprofile
+#'
+#' @param dbpath Character. The path where an SQLite database should be
+#'   installed. Defaults to the user's home directory.
+#'
+#' @export
+install_rhist <- function(dbpath = default_rhist_path()) {
+
+  if (dbpath == "")
+    stop("rhist needs a persistent DB")
+
+  if (fs::file_exists(dbpath)) {
+    res <- try({
+      db <- DBI::dbConnect(RSQLite::SQLite(), dbpath)
+      tbls <- DBI::dbListTables(db)
+      all(tbls %in% c("package_info",
+                      "rhistory",
+                      "session_command_holder",
+                      "session_history",
+                      "session_info_holder",
+                      "session_packages"))
+    }, silent = TRUE)
+
+    if (class(res) == "try-error")
+      stop("File is present but appears to be invalid. Delete ", dbpath, " and run install_rhist() again")
+    if (!res)
+      stop("File is present but appears to be invalid. Delete ", dbpath, " and run install_rhist() again")
+    if (res) {
+      message("It looks like a valid rhist database is already installed at ", dbpath, ". No action has been taken.")
+    }
+  } else {
+    message("Initializing new rhist database at ", dbpath)
+    initialize_rhist_db(dbpath)
+  }
+  use_rhist()
+}
+
+#' Create a default path for db within the user's home directory
+#' @export
 default_rhist_path <- function() {
   fs::path_home(".rhistory.sqlite")
 }
 
+#' Retrieve path of installed db
+#' @export
 installed_rhist_path <- function() {
   getOption("rhist.path")
 }
 
-install_rhist <- function(dbpath = default_rhist_path()) {
-  initialize_rhist_db(dbpath)
-  use_rhist()
-}
-
+# Function to generate the code needed in .Rprofile to save to rhistory based on
+# a specified path
 generate_rhist_last <- function(dbpath) {
   sprintf(readLines("inst/rhist_last.R"), dbpath)
 }
@@ -20,14 +61,6 @@ use_rhist <- usethis::use_(
   todo_text = "Add code to your .Rprofile that will specify the home for the R command history SQLite file, and save command history every time an interactive R sesison closes.",
   code = generate_rhist_last(dbpath)
 )
-
-verify_rhist_db <- function(dbpath) {
-  if (is.null(dbpath))
-    stop("No path set for rhist database. Run initialize_rhist_db().")
-
-  !fs::file_exists(dbpath)
-  stop()
-}
 
 initialize_rhist_db <- function(dbpath) {
   db <- DBI::dbConnect(RSQLite::SQLite(), dbpath)
