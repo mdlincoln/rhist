@@ -1,0 +1,35 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(rhist)
+library(tidyverse)
+library(dbplyr)
+library(DBI)
+```
+
+```{r collect}
+rhistorydb <- dbConnect(RSQLite::SQLite(), installed_rhist_path())
+rhistory <- tbl(rhistorydb, "rhistory")
+session_history <- tbl(rhistorydb, "session_history")
+rhistory_commands <- rhistory %>%
+  left_join(session_history, by = "sid") %>% 
+  collect()
+dbDisconnect(rhistorydb)
+```
+
+```{r}
+all_commands <- str_match_all(rhistory$cmd, "([A-Za-z\\._]+)\\(") %>% 
+  map(~ .[,2]) %>% 
+  flatten_chr()
+
+command_frequency <- fct_count(all_commands, sort = TRUE)
+```

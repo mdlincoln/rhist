@@ -6,14 +6,17 @@ Description: Create a minimal sqlite database for storing R command history.
 License: MIT + file LICENSE
 URL: https://github.com/mdlincoln/rhist
 BugReports: https://github.com/mdlincoln/rhist/issues
-Imports: 
+Imports:
     DBI,
     devtools,
     fs,
     RSQLite
-Suggests: 
-    dbplyr
+Suggests:
+    dbplyr,
+    knitr,
+    rmarkdown
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr
