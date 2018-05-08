@@ -10,7 +10,8 @@ Imports:
     DBI,
     devtools,
     fs,
-    RSQLite
+    RSQLite,
+    usethis
 Suggests:
     dbplyr,
     knitr,
@@ -20,3 +21,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Remotes:  
+    mdlincoln/usethis
