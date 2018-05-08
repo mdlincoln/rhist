@@ -27,9 +27,19 @@ dbDisconnect(rhistorydb)
 ```
 
 ```{r}
-all_commands <- str_match_all(rhistory$cmd, "([A-Za-z\\._]+)\\(") %>% 
+all_commands <- str_match_all(rhistory_commands$cmd, "([A-Za-z\\._]+)\\(") %>% 
   map(~ .[,2]) %>% 
   flatten_chr()
 
-command_frequency <- fct_count(all_commands, sort = TRUE)
+command_frequency <- fct_count(all_commands, sort = TRUE) %>% 
+  mutate(f = fct_reorder(f, n))
+```
+
+```{r}
+command_frequency %>% 
+  slice(1:10) %>% 
+  ggplot(aes(x = f, y = n)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+  
 ```
