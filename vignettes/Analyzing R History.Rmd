@@ -37,9 +37,8 @@ command_frequency <- fct_count(all_commands, sort = TRUE) %>%
 
 ```{r}
 command_frequency %>% 
-  slice(1:10) %>% 
+  slice(1:15) %>% 
   ggplot(aes(x = f, y = n)) +
   geom_bar(stat = "identity") +
   coord_flip()
-  
 ```
