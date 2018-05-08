@@ -22,4 +22,4 @@ LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Remotes:  
-    mdlincoln/usethis
+    mdlincoln/usethis@generic_use
