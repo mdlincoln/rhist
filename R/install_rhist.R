@@ -65,6 +65,8 @@ use_rhist <- usethis::use_(
 initialize_rhist_db <- function(dbpath) {
   db <- DBI::dbConnect(RSQLite::SQLite(), dbpath)
 
+  DBI::dbWithTransaction(db, code = {
+
   DBI::dbExecute(db, "CREATE TABLE session_history(
                  sid INTEGER PRIMARY KEY NOT NULL,
                  version TEXT NOT NULL,
@@ -136,6 +138,8 @@ initialize_rhist_db <- function(dbpath) {
 
                  DELETE FROM session_info_holder;
                  END;")
+
+  })
 
   DBI::dbDisconnect(db)
   invisible()
