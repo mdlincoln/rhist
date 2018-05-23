@@ -17,13 +17,8 @@ library(DBI)
 ```
 
 ```{r collect}
-rhistorydb <- dbConnect(RSQLite::SQLite(), installed_rhist_path())
-rhistory <- tbl(rhistorydb, "rhistory")
-session_history <- tbl(rhistorydb, "session_history")
-rhistory_commands <- rhistory %>%
-  left_join(session_history, by = "sid") %>% 
-  collect()
-dbDisconnect(rhistorydb)
+rhistory_commands <- collect_rhist()
+rhistory_packages <- collect_session_packages()
 ```
 
 ```{r}
