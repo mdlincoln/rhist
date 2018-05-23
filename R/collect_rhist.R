@@ -16,6 +16,7 @@ collect_rhist <- function(rhist_path = installed_rhist_path()) {
 }
 
 #' @describeIn collect_rhist A data frame with package info for each session
+#' @export
 collect_session_packages <- function(rhist_path = installed_rhist_path()) {
   db <- DBI::dbConnect(RSQLite::SQLite(), rhist_path)
   res <- DBI::dbGetQuery(db, "SELECT * FROM session_packages LEFT JOIN package_info USING (pid)")
