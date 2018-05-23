@@ -14,6 +14,7 @@ library(rhist)
 library(tidyverse)
 library(dbplyr)
 library(DBI)
+library(rematch2)
 ```
 
 ```{r collect}
@@ -22,18 +23,23 @@ rhistory_packages <- collect_session_packages()
 ```
 
 ```{r}
-all_commands <- str_match_all(rhistory_commands$cmd, "([A-Za-z\\._]+)\\(") %>% 
-  map(~ .[,2]) %>% 
-  flatten_chr()
+all_commands <- re_match_all(rhistory_commands$cmd, "([A-Za-z\\._]+)\\(") %>% 
+  repair_names() %>% 
+  rename(cmd = V1) %>% 
+  add_column(session_id = rhistory_commands$sid) %>% 
+  group_by(session_id) %>% 
+  mutate(command_order = row_number()) %>% 
+  ungroup() %>% 
+  unnest(cmd)
 
-command_frequency <- fct_count(all_commands, sort = TRUE) %>% 
-  mutate(f = fct_reorder(f, n))
+command_frequency <- count(all_commands, cmd, sort = TRUE) %>% 
+  mutate(cmd = fct_reorder(cmd, n))
 ```
 
 ```{r}
 command_frequency %>% 
   slice(1:15) %>% 
-  ggplot(aes(x = f, y = n)) +
+  ggplot(aes(x = cmd, y = n)) +
   geom_bar(stat = "identity") +
   coord_flip()
 ```
