@@ -43,3 +43,25 @@ command_frequency %>%
   geom_bar(stat = "identity") +
   coord_flip()
 ```
+
+```{r tandem_packages}
+tandem_packages <- rhistory_packages %>% 
+  mutate(package = as.factor(package)) %>%
+  xtabs(~ package + sid, data = ., sparse = TRUE)
+
+package_count <- rhistory_packages %>% 
+  count(package) %>% 
+  # Ignore packages used once and ignore packages used EVERY time
+  filter(n > 1 & n != max(n))
+
+package_distance <- dist(tandem_packages, method = "binary") %>% 
+  cmdscale() %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "package") %>% 
+  inner_join(package_count, by = "package")
+
+library(ggrepel)
+ggplot(package_distance, aes(x = V1, y = V2, size = n)) +
+  geom_point() +
+  geom_label_repel(aes(label = package))
+```
